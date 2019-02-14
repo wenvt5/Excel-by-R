@@ -19,7 +19,7 @@ options(stringsAsFactors = FALSE)
 depos <- 'I08007'
 
 ## read in RDCOMClient excel functions
-source("C:/Users/yingw/Desktop/Ying/R_learning/excelUtils.R")
+source("C:/Users/ying/excelUtils.R")
 
 path <- paste("Z:/provantis/QueryOutput/", depos, "/outlier_files", sep='')
 setwd(path)
