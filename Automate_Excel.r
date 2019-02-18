@@ -14,12 +14,10 @@ library(plyr)
 options(stringsAsFactors = FALSE)
 
 ## define study and report type
-#depos <- 'I10577'
-# depos <- 'I11054B'
-depos <- 'I08007'
+depos <- 'I00001'
 
 ## read in RDCOMClient excel functions
-source("C:/Users/ying/excelUtils.R")
+source("excelUtils.R")
 
 path <- paste("Z:/provantis/QueryOutput/", depos, "/outlier_files", sep='')
 setwd(path)
