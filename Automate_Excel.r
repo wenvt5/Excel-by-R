@@ -1,11 +1,6 @@
 ## -------------------------------------------
-## read in outlier info, reformat, write to excel
-## when run, the program will sometimes print
-##
-## Warning messages:
-## 1: NAs introduced by coercion
-##
-## This is ok, it happens when there are multiple records with the same value being flagged as an outlier
+## read in data, reformat, write to excel
+## 
 ## -------------------------------------------
 
 library(RDCOMClient)
@@ -14,12 +9,12 @@ library(plyr)
 options(stringsAsFactors = FALSE)
 
 ## define study and report type
-depos <- 'I00001'
+depos <- ''
 
 ## read in RDCOMClient excel functions
 source("excelUtils.R")
 
-path <- paste("Z:/provantis/QueryOutput/", depos, "/outlier_files", sep='')
+path <- paste("yourFilePath", depos, "subFolder", sep='')
 setwd(path)
 
 
@@ -59,37 +54,8 @@ excel_er_ate <- function(number)
 
 ## determine how many reports to loop through
 reports <- NULL
-if(length(grep("_I04_", list.files())) == 2)	{ reports <- rbind(reports, c('I04', 'bodyweight')) }
-if(length(grep("_I04G_", list.files())) == 2)	{ reports <- rbind(reports, c('I04G', 'bodyweightGain')) }
-if(length(grep("_I06_", list.files())) == 2)	{ reports <- rbind(reports, c('I06', 'foodConsumption')) }
-if(length(grep("_I07_", list.files())) == 2)	{ reports <- rbind(reports, c('I07', 'waterConsumption')) }
-if(length(grep("_I09_", list.files())) == 2)	{ reports <- rbind(reports, c('I09', 'bodytemps')) }
-if(length(grep("_M01_", list.files())) == 2)    { reports <- rbind(reports, c('M01', 'irritancy')) }
-if(length(grep("_M02_", list.files())) == 2)    { reports <- rbind(reports, c('M02', 'hypersensitivity')) }
-if(length(grep("_M03_", list.files())) == 2)    { reports <- rbind(reports, c('M03', 'leukocyteCellDifferential')) }
-if(length(grep("_M04_", list.files())) == 2)    { reports <- rbind(reports, c('M04', 'immunotoxHematology')) }
-if(length(grep("_M06_", list.files())) == 2)    { reports <- rbind(reports, c('M06', 'spleenImmunophenotyping')) }
-if(length(grep("_M07_", list.files())) == 2)    { reports <- rbind(reports, c('M07', 'spleenAFC')) }
-if(length(grep("_M08_", list.files())) == 2)    { reports <- rbind(reports, c('M08', 'antiSRBC')) }
-if(length(grep("_M09_", list.files())) == 2)    { reports <- rbind(reports, c('M09', 'antiKLH')) }
-if(length(grep("_M09M_", list.files())) == 2)   { reports <- rbind(reports, c('M09M','antiKLH')) }
-if(length(grep("_M11_", list.files())) == 2)    { reports <- rbind(reports, c('M11', 'antiCD3')) }
-if(length(grep("_M12_", list.files())) == 2)    { reports <- rbind(reports, c('M12', 'cytotoxicTcell')) }
-if(length(grep("_M15_", list.files())) == 2)    { reports <- rbind(reports, c('M15', 'naturalKiller')) }
-if(length(grep("_M17_", list.files())) == 2)    { reports <- rbind(reports, c('M17', 'boneMarrow')) }
-if(length(grep("_M19_", list.files())) == 2)    { reports <- rbind(reports, c('M19', 'ELISpot')) }
-if(length(grep("_N01_", list.files())) == 2)    { reports <- rbind(reports, c('N01', 'neuromuscularFunction')) }
-if(length(grep("_PA06_", list.files())) == 2)   { reports <- rbind(reports, c('PA06', 'organWeight')) }
-if(length(grep("_PA23_", list.files())) == 2)   { reports <- rbind(reports, c('PA23', 'ovarianFollicles')) }
-if(length(grep("_PA41_", list.files())) == 2)   { reports <- rbind(reports, c('PA41', 'clinicalChemistry')) }
-if(length(grep("_PA43_", list.files())) == 2)   { reports <- rbind(reports, c('PA43', 'hematology')) }
-if(length(grep("_PA44_", list.files())) == 2)   { reports <- rbind(reports, c('PA44', 'urinalysis')) }
-if(length(grep("_PA45_", list.files())) == 2)   { reports <- rbind(reports, c('PA45', 'liverSpecialStudies')) }
-if(length(grep("_PA47_", list.files())) == 2)   { reports <- rbind(reports, c('PA47', 'lungBurden')) }
-if(length(grep("_PA49_", list.files())) == 2)   { reports <- rbind(reports, c('PA49', 'cytochromeActivity')) }
-if(length(grep("_PA50_", list.files())) == 2)   { reports <- rbind(reports, c('PA50', 'bonemarrowsmear')) }
-if(length(grep("_R06_", list.files())) == 2)    { reports <- rbind(reports, c('R06', 'andrology')) }
-if(length(grep("_R07_", list.files())) == 2)    { reports <- rbind(reports, c('R07', 'hormone')) }
+
+# codes to create a list of report names
 
 reports <- as.data.frame(reports)
 names(reports) <- c('table_id', 'report_name')
@@ -100,8 +66,8 @@ for(r in 1:nrow(reports))
 	report_name <- reports$report_name[r]
 
 	setwd(path)
-	data_file    <- list.files()[grep(paste(table_id, "_data.csv", sep=''), list.files())]
-	outlier_file <- list.files()[grep(paste(table_id, "_outliers.csv", sep=''), list.files())]
+	data_file    <- list.files()[grep(paste(table_id, "data.csv", sep=''), list.files())]
+	outlier_file <- list.files()[grep(paste(table_id, "outliers.csv", sep=''), list.files())]
 
 	data3 <- read.csv(data_file)
 	data3[is.na(data3)] <- ''
@@ -110,7 +76,7 @@ for(r in 1:nrow(reports))
 	outliers[is.na(outliers)] <- ''
 
 	## add blank columns so we can have ONE version of this file for any input dataset
-	common_fields <- c('sex', 'generation', 'selection', 'litter_name', 'phase_type', 'phase_time', 'phase_start', 'phase_end')
+	common_fields <- c('list of column names of your file')
 
 	missing_cols <- common_fields[!common_fields %in% names(data3)]
 	start_names <- names(data3)
@@ -145,7 +111,7 @@ for(r in 1:nrow(reports))
 			endpoint <- temp_list$endpoint[1]
 			endpoint <- gsub(' ', '_', endpoint)
 			names(temp_list)[names(temp_list) == 'numeric_value'] <- endpoint
-			temp_list <- temp_list[,c('chemical', 'depositor_study_number', 'c_number', 'species', 'strain', 'route', 'dose', 'dose_unit', 'trtgrp_type', 'generation', 'sex', 'selection', 'litter_name', 'anmlid', 'phase_type', 'phase_time', 'phase_start', 'phase_end', endpoint)]
+			temp_list <- temp_list[,c('list of column names of your file')]
 
 			thin_list[[j]] <- temp_list
 			}
@@ -166,7 +132,7 @@ for(r in 1:nrow(reports))
 		} else
 		{
 		pointflag <- 'no'
-		out <- data3[,c('chemical', 'depositor_study_number', 'c_number', 'species', 'strain', 'route', 'dose', 'dose_unit', 'trtgrp_type', 'generation', 'sex', 'selection', 'litter_name', 'anmlid', 'phase_type', 'phase_time', 'phase_start', 'phase_end', 'numeric_value')]
+		out <- data3[,c('list of column names of your file')]
 		}
 
 
@@ -185,17 +151,7 @@ for(r in 1:nrow(reports))
 		data_temp[is.na(data_temp)] <- ''
 
 		out_temp <- subset(outliers, sex==s)
-
-#		## if missing_cols non empty, force missing_cols in out_temp to blanks
-#		if(length(missing_cols) > 0)
-#			{
-#			for(m in 1:length(missing_cols))
-#				{
-#				cut_index <- grep(missing_cols[m], names(out_temp))
-#				out_temp[,cut_index] <- ''
-#				}
-#			}
-
+ 
 
 		## create excel
 		sh <- wb[["Worksheets"]]$Add()
